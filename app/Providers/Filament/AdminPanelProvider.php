@@ -55,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->font('Poppins')
+            ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }
