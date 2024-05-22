@@ -37,6 +37,7 @@ class MemberResource extends Resource
                         ->maxLength(255),
                     Forms\Components\Select::make('parent_id')
                         ->searchable()
+                        ->required()
                         ->preload()
                         ->label('Nama Keluarga')
                         ->helperText('Contoh: Keluarga Rusdi')
@@ -109,7 +110,7 @@ class MemberResource extends Resource
                                 ->send();
                                 $action->halt();
                         }
-                        
+
                     }),
             ])
             ->bulkActions([

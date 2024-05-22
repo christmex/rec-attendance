@@ -72,6 +72,8 @@ class MemberList extends BaseWidget
                 //     ->sortable(),
                 TextColumn::make('phone')
                     ->label('WA/HP')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
                     ->searchable(),
                 // ToggleColumn::make('')
                 //     // ->hidden(fn()=>empty($this->events))
@@ -92,7 +94,17 @@ class MemberList extends BaseWidget
             ->searchOnBlur()
             ->actions([
                 Tables\Actions\Action::make('CheckIn')
-                    // ->hidden(fn(Model $record)=> count($this->data) && !$record->attendances->where('event_id',$this->events)->count())
+                    ->hidden(function(Model $record){
+                        if(count($this->data)){
+                            if($record->attendances->count()){
+                                if($record->attendances->where('event_id',$this->data['event_id'])->count()){
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                        return false;
+                    })
                     ->action(function(Model $record){
                         if(!count($this->data)){
                             Notification::make()
