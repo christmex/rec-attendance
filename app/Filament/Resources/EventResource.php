@@ -86,4 +86,10 @@ class EventResource extends Resource
             'index' => Pages\ManageEvents::route('/'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('end');
+    }
 }

@@ -33,8 +33,18 @@ class MemberList extends BaseWidget
                 Radio::make('event_id')
                     ->label('Kegiatan')
                     ->required()
-                    ->options(Event::all()->pluck('name','id')->toArray())
-                    ->descriptions(Event::all()->pluck('description','id')->toArray())
+                    ->options(
+                        Event::where(function($query){
+                            $query->where('start', '<=', date('Y-m-d H:i:s'))
+                                ->where('end', '>=', date('Y-m-d H:i:s'));
+                            })->get()->pluck('name','id')->toArray()
+                        )
+                    ->descriptions(
+                        Event::where(function($query){
+                            $query->where('start', '<=', date('Y-m-d H:i:s'))
+                                ->where('end', '>=', date('Y-m-d H:i:s'));
+                            })->get()->pluck('description','id')->toArray()
+                        )
                     ->columnSpanFull()
                     ->columns(2)
                     ->gridDirection('row')

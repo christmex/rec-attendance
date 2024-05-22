@@ -25,21 +25,21 @@ class Event extends Model
         ];
     }
 
-    protected static function booted(): void
-    {
-        static::addGlobalScope('ActiveEvent', function (Builder $builder) {
-            // $from = date('Y-m-d'). ' 00:00:00';
-            $from = date('Y-m-d H:i:s');
-            $to = date('Y-m-d'). ' 23:59:59';
-            $builder->where(function($query) use ($from, $to){
-                $query->where('start', '<=', $from)
-                    ->where('end', '>=', $from);
-                });
-                // ->where('start', )
-                // ->where('end', )
-                // ;
-        });
-    }
+    // protected static function booted(): void
+    // {
+    //     static::addGlobalScope('ActiveEvent', function (Builder $builder) {
+    //         // $from = date('Y-m-d'). ' 00:00:00';
+    //         $from = date('Y-m-d H:i:s');
+    //         $to = date('Y-m-d'). ' 23:59:59';
+    //         $builder->where(function($query) use ($from, $to){
+    //             $query->where('start', '<=', $from)
+    //                 ->where('end', '>=', $from);
+    //             });
+    //             // ->where('start', )
+    //             // ->where('end', )
+    //             // ;
+    //     });
+    // }
 
     public function getDescriptionAttribute()
     {
