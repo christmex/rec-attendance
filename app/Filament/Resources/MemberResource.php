@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MemberResource\Pages;
-use App\Filament\Resources\MemberResource\RelationManagers;
-use App\Models\Member;
 use Filament\Forms;
-use Filament\Forms\Components\Group;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Member;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Group;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\MemberResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MemberResource\RelationManagers;
 
 class MemberResource extends Resource
 {
@@ -76,10 +78,11 @@ class MemberResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                 ->label('Nama Jemaat')
+                    ->description(fn (Member $record): string => $record->parent->name)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Nama Keluarga')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('parent.name')
+                //     ->label('Nama Keluarga')
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('WA/HP')
                     ->searchable(),
@@ -97,7 +100,17 @@ class MemberResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->iconButton(),
-                Tables\Actions\DeleteAction::make()->iconButton(),
+                Tables\Actions\DeleteAction::make()->iconButton()
+                    ->before(function (Action $action,Member $record) {
+                        if ($record->attendances()->exists()){
+                            Notification::make()
+                                ->danger()
+                                ->title("Terdapat Data di Data Kehadiran")
+                                ->send();
+                                $action->halt();
+                        }
+                        
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
