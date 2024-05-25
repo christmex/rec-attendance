@@ -15,15 +15,34 @@ use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Model;
+// use Livewire\Attributes\On; 
 
 class MemberList extends BaseWidget
 {
     protected int | string | array $columnSpan = 'full';
 
-    public $events;
+    // protected $listeners = ['updateMemberListTable' => '$refresh'];
+
+    // 
+    // public $events;
 
     // when we use event with form blade uncommend this
     public ?array $data = [];
+
+    public function updatingData($property, $value)
+    {
+        // dd($property,$value);
+        // $property: The name of the current property being updated
+        // $value: The value about to be set to the property
+
+        // app.filament.widgets.member-list
+        // dd($property);
+        // $this->dispatch('re-render-table');
+ 
+        // if ($property === 'postId') {
+        //     throw new Exception;
+        // }
+    }
 
     // when we use event with form blade uncommend this
     public function form(Form $form): Form
@@ -32,8 +51,16 @@ class MemberList extends BaseWidget
             ->schema([
                 Radio::make('event_id')
                     ->label('Kegiatan')
+                    ->live()
                     ->required()
+                    // ->default(fn()=>
+                    //     Event::where(function($query){
+                    //         $query->where('start', '<=', date('Y-m-d H:i:s'))
+                    //             ->where('end', '>=', date('Y-m-d H:i:s'));
+                    //         })->first()->id
+                    // )
                     ->options(
+                        // dd($this)
                         Event::where(function($query){
                             $query->where('start', '<=', date('Y-m-d H:i:s'))
                                 ->where('end', '>=', date('Y-m-d H:i:s'));
@@ -49,9 +76,11 @@ class MemberList extends BaseWidget
                     ->columns(2)
                     ->gridDirection('row')
             ])
+            // ->dispatchEvent('updateMemberListTable')
             ->statePath('data');
     }
 
+    // #[On('re-render-table')] 
     public function table(Table $table): Table
     {
         return $table
@@ -113,7 +142,7 @@ class MemberList extends BaseWidget
                             }
                             return false;
                         }
-                        return false;
+                        return true;
                     })
                     ->action(function(Model $record){
                         if(!count($this->data)){
@@ -139,7 +168,41 @@ class MemberList extends BaseWidget
                                     ->send();
                             }
                         }
+                    }),
+                Tables\Actions\Action::make('UnCheckIn')
+                    ->color('danger')
+                    ->hidden(function(Model $record){
+                        if(count($this->data)){
+                            if($record->attendances->count()){
+                                if(!$record->attendances->where('event_id',$this->data['event_id'])->count()){
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                        return true;
                     })
+                    ->action(function(Model $record){
+                        if(!count($this->data)){
+                            Notification::make()
+                                ->danger()
+                                ->title('Pilih Kegiatan Terlebih dahulu')
+                                ->send();
+                        }else {
+                            if($record->attendances->where('event_id',$this->data['event_id'])->count()){
+                                Attendance::where('event_id',$this->data['event_id'])->where('member_id',$record->id)->delete();
+                                Notification::make()
+                                    ->info()
+                                    ->title($record->name.' Berhasil Melalukan Un-Check-in')
+                                    ->send();
+                            }else {
+                                Notification::make()
+                                    ->warning()
+                                    ->title($record->name.' Belum Absen Di Kegiatan Terpilih')
+                                    ->send();
+                            }
+                        }
+                    }),
             ])
             ->deferLoading();
     }
