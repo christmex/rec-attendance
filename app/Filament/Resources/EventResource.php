@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\EventResource\Pages;
-use App\Filament\Resources\EventResource\RelationManagers;
-use App\Models\Event;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Event;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\EventResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\EventResource\RelationManagers;
 
 class EventResource extends Resource
 {
@@ -52,10 +53,12 @@ class EventResource extends Resource
                 Tables\Columns\TextColumn::make('start')
                     ->dateTime('l, d F Y \\J\\a\\m H:i')
                     ->label('Mulai')
+                    ->toggleable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end')
                     ->dateTime('l, d F Y \\J\\a\\m H:i')
                     ->label('Berakhir')
+                    ->toggleable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -67,7 +70,10 @@ class EventResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('id')
+                    ->label('Nama Kegiatan')
+                    ->searchable()
+                    ->options(Event::all()->pluck('name_with_desc','id')->toArray())
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->iconButton(),

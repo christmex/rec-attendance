@@ -45,6 +45,11 @@ class Event extends Model
     {
         return new HtmlString('Mulai: '.$this->start->translatedFormat('l, d F Y \\J\\a\\m H:i').'<br> Berakhir: '.$this->end->translatedFormat('l, d F Y \\J\\a\\m H:i'));
     }
+
+    public function getNameWithDescAttribute()
+    {
+        return $this->name.' | Mulai: '.$this->start->translatedFormat('l, d F Y \\J\\a\\m H:i');
+    }
     public function attendances() :HasMany{
         return $this->hasMany(Attendance::class);
     }
