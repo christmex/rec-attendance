@@ -88,7 +88,8 @@ class MemberList extends BaseWidget
             ->query(fn (): Builder => 
                     Member::query()
                         ->whereNotNull('parent_id')
-                        ->orderBy('parent_id')
+                        // ->orderBy('parent_id')
+                        ->orderBy('name')
                     // ->select('students.*')
                     // ->selectSub(
                     //     function ($query) {
