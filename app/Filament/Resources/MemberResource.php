@@ -78,7 +78,7 @@ class MemberResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                ->label('Nama Jemaat')
+                    ->label('Nama Jemaat')
                     ->description(fn (Member $record): string => $record->parent->name)
                     ->searchable(),
                 // Tables\Columns\TextColumn::make('parent.name')
