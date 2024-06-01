@@ -11,6 +11,7 @@ use App\Models\Attendance;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Radio;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -83,7 +84,16 @@ class AttendanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('event_id')
+                    ->label('Nama Kegiatan')
+                    ->searchable()
+                    ->options(Event::all()->pluck('name_with_desc','id')->toArray()),
+                SelectFilter::make('member_id')
+                    ->label('Nama Jemaat')
+                    ->searchable()
+                    ->preload()
+                    ->optionsLimit(10)
+                    ->relationship('member','name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
