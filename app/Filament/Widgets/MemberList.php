@@ -2,19 +2,20 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Attendance;
 use Filament\Tables;
 use App\Models\Event;
 use App\Models\Member;
 use Filament\Forms\Form;
+use App\Models\Attendance;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Radio;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Model;
 // use Livewire\Attributes\On; 
 
 class MemberList extends BaseWidget
@@ -133,6 +134,7 @@ class MemberList extends BaseWidget
             ->searchOnBlur()
             ->actions([
                 Tables\Actions\Action::make('CheckIn')
+                    ->label('Absen Masuk')
                     ->hidden(function(Model $record){
                         if(count($this->data)){
                             if($record->attendances->count()){
@@ -159,7 +161,7 @@ class MemberList extends BaseWidget
                                 ]);
                                 Notification::make()
                                     ->success()
-                                    ->title($record->name.' Berhasil Melalukan Check-in')
+                                    ->title($record->name.' Berhasil Melalukan Absen Masuk')
                                     ->send();
                             }else {
                                 Notification::make()
@@ -171,6 +173,7 @@ class MemberList extends BaseWidget
                     }),
                 Tables\Actions\Action::make('UnCheckIn')
                     ->color('danger')
+                    ->label('Batalkan')
                     ->hidden(function(Model $record){
                         if(count($this->data)){
                             if($record->attendances->count()){
@@ -193,7 +196,7 @@ class MemberList extends BaseWidget
                                 Attendance::where('event_id',$this->data['event_id'])->where('member_id',$record->id)->delete();
                                 Notification::make()
                                     ->info()
-                                    ->title($record->name.' Berhasil Melalukan Un-Check-in')
+                                    ->title($record->name.' Berhasil Melalukan Pembataln absen masuk')
                                     ->send();
                             }else {
                                 Notification::make()
@@ -204,6 +207,11 @@ class MemberList extends BaseWidget
                         }
                     }),
             ])
+            // ->filters([
+            //     Filter::make('is_family')
+            //         ->label('Tampilkan Hanya Berkeluarga')
+            //         ->query(fn (Builder $query): Builder => $query->where('is_featured', true))
+            // ])
             ->deferLoading();
     }
 }
