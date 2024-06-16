@@ -155,7 +155,7 @@ class MemberList extends BaseWidget
                                 ->send();
                         }else {
                             if(!$record->attendances->where('event_id',$this->data['event_id'])->count()){
-                                Attendance::firstOrCreate([
+                                Attendance::create([
                                     'event_id' => $this->data['event_id'],
                                     'member_id' => $record->id,
                                     'check_in' => date('Y-m-d H:i:s'),
